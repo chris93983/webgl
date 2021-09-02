@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                margin: 0;
+                font-family: monospace;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="500" height="500"></canvas>
+        <script id="shader-vs" type="x-shader/x-vertex">
+            precision lowp float;
+            attribute vec3 v3Position; // Order doesn't matter here.
+            attribute vec4 inColor;
+            varying   vec4 outColor;
+            void  main(void) {
+                outColor = inColor;
+                gl_Position = vec4(v3Position, 1.0);
+            }
+        </script>
+        <script id="shader-fs" type="x-shader/x-fragment">
+            precision lowp float;
+            varying vec4 outColor;
+            void main(void) {
+                gl_FragColor = outColor;
+            }
+        </script>
+        <script>
+            const canvas = document.getElementById('canvas');
+            const gl = canvas.getContext('webgl');
+            const v3PositionIndex = 0;
+            const inColor  =  1;
+            //用来设置视口
+            gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            //创建shader
+            const vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
+            const fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
+            //指定shader数据
+            gl.shaderSource(vertexShaderObject, document.querySelector("#shader-vs").innerText);
+            gl.shaderSource(fragmentShaderObject, document.querySelector("#shader-fs").innerText);
+            //编译shader
+            gl.compileShader(vertexShaderObject);
+            gl.compileShader(fragmentShaderObject);
+
+            if (!gl.getShaderParameter(vertexShaderObject, gl.COMPILE_STATUS)) {
+                alert("error: vertexShaderObject");
+            }
+
+            if (!gl.getShaderParameter(fragmentShaderObject, gl.COMPILE_STATUS)) {
+                alert("error: fragmentShaderObject");
+            }
+            //创建program
+            const programObject = gl.createProgram();
+            //连接shader
+            gl.attachShader(programObject, vertexShaderObject);
+            gl.attachShader(programObject, fragmentShaderObject);
+            //为v3Position赋值
+            gl.bindAttribLocation(programObject, v3PositionIndex, "v3Position");
+            gl.bindAttribLocation(programObject, inColor, "inColor");
+
+            gl.linkProgram(programObject);
+
+            if (!gl.getProgramParameter(programObject, gl.LINK_STATUS)) {
+                alert("error: programObject");
+            }
+
+            gl.useProgram(programObject);
+
+            const jsArrayData = [// x, y, z, r, g, b, a
+                -0.5, 0.5, 0.0, 1.0, 0.0, 0.0, 1.0,
+                0.5, 0.5, 0.0, 0.0, 1.0, 0.0, 1.0,
+                0.5, -0.5, 0.0, 0.0, 0.0, 1.0, 1.0,
+                -0.5, -0.5, 0.0, 1.0, 1.0, 0.0, 1.0,
+            ];
+            const indexDatas = [
+                0, 1, 2,
+                0, 2, 3,
+            ];
+            //创建缓冲区对象
+            const traingleBuffer = gl.createBuffer();
+            //绑定缓冲区对象
+            gl.bindBuffer(gl.ARRAY_BUFFER, traingleBuffer);
+            //顶点数组data数据传入缓冲区
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(jsArrayData), gl.STATIC_DRAW);
+            
+            const indexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexDatas), gl.STATIC_DRAW);
+
+            gl.enableVertexAttribArray(v3PositionIndex);
+            gl.enableVertexAttribArray(inColor);
+            //缓冲区中的数据按照一定的规律传递给位置变量apos
+            gl.vertexAttribPointer(v3PositionIndex, 3, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT * 7, 0);
+            gl.vertexAttribPointer(inColor, 4, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT * 7, Float32Array.BYTES_PER_ELEMENT * 3);
+
+            // gl.drawElements(gl.TRIANGLE_STRIP, 6, gl.UNSIGNED_SHORT, 0); // 6 means 2 triangle points
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        </script>
+    </body>
+</html>

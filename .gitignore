@@ -1,0 +1,98 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+dist
+www
+frontend/android
+frontend/ios
+platforms
+tmp
+out-tsc
+output
+backend/packages
+backend/SharedServices/Services/ZenStorage/packages
+backend/SharedServices/Services/ZenStorage/ZENStorageServerGateway/Data
+backend/SharedServices/Services/ZenStorage/publish
+backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/management
+
+# dependencies
+node_modules
+
+# IDEs and editors
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Ignore files built by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+obj/
+.vs/
+StyleCop.Cache
+*.coverage
+coverage.*
+TestResults.*
+
+#Ignore the build result files of identity service Front End
+
+backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/js/**/*.js
+backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/js/**/*.js.map
+backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/css/**/*.css
+backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/css/**/*.map
+!backend/SharedServices/Services/ZenStorage/ZENIdentityServer/wwwroot/**/signout-redirect.js
+
+#Ignore the build result static files of ZENDataExplorer front end
+backend/ZENDataExplorer/wwwroot
+
+#Ignore the auto generated files by WiX harvest tool
+*.Generated.wxs
+
+
+# misc
+.sass-cache
+connect.lock
+coverage
+libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+test-output.xml
+typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Ignore self-signed localhost certificates
+localhost.pfx
+
+# Include All ThirdParty files
+!/backend/SharedServices/Framework/ThirdParty/*
