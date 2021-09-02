@@ -23,12 +23,6 @@ const getImageData = (url) => {
     const myCanvas = document.querySelector('#myCanvas');
     const gl = myCanvas.getContext('webgl');
     const program = gl.createProgram();
-    const aPosition = new Float32Array([
-        1.0, -1.0,
-        1.0, 1.0,
-        -1.0, 1.0,
-        -1.0, -1.0,
-    ]);
     const aPositionPoints = new Float32Array([
         1.0, 1.0, 1.0, 1.0,
         1.0, -1.0, 1.0, 1.0,
@@ -36,6 +30,18 @@ const getImageData = (url) => {
         -1.0, 1.0, 1.0, 1.0,
         0.0, 0.0, 1.0, 1.0,
         0.5, 0.5, 1.0, 1.0,
+    ]);
+    const aPosition = new Float32Array([
+        1.0, -1.0,
+        1.0, 1.0,
+        -1.0, 1.0,
+        -1.0, -1.0,
+    ]);
+    const aTexCoord = new Float32Array([
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
     ]);
     const useShader = (url, vertex = false) => __awaiter(this, void 0, void 0, function* () {
         const shaderSource = yield (yield fetch(url)).text();
@@ -57,12 +63,33 @@ const getImageData = (url) => {
         gl.vertexAttribPointer(position, size, gl.FLOAT, false, stride, offset);
         gl.enableVertexAttribArray(position);
     };
-    const draw = (positions = aPosition) => {
+    const loadTexture = (url, textureNumber = gl.TEXTURE0) => {
         gl.useProgram(program);
+        const texture = gl.createTexture();
+        const image = new Image();
+        const uSampler = gl.getUniformLocation(program, 'u_Sampler');
+        return new Promise(resolve => {
+            image.onload = () => {
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+                gl.activeTexture(textureNumber);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+                gl.uniform1i(uSampler, 0);
+                resolve();
+            };
+            image.src = url;
+        });
+    };
+    const draw = (positions = aPosition, useProgram = true) => {
         gl.viewport(0, 0, myCanvas.width, myCanvas.height);
         const size = 2;
         setBuffer('a_Position', positions, size);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, positions.length / size);
+        setBuffer('a_TexCoord', aTexCoord, size);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / size);
     };
     /******** runable function ********/
     const drawPoints = () => __awaiter(this, void 0, void 0, function* () {
@@ -77,11 +104,13 @@ const getImageData = (url) => {
     const drawColor = () => __awaiter(this, void 0, void 0, function* () {
         clear();
         yield useShader('shaders/fragment/color.glsl');
+        gl.useProgram(program);
         draw();
     });
     const drawTriangle = () => __awaiter(this, void 0, void 0, function* () {
         clear();
         yield useShader('shaders/fragment/color.glsl');
+        gl.useProgram(program);
         draw(new Float32Array([
             1.0, -1.0,
             1.0, 1.0,
@@ -91,16 +120,18 @@ const getImageData = (url) => {
     const drawImage = () => __awaiter(this, void 0, void 0, function* () {
         clear();
         const blob = yield (yield fetch('images/1.jpg')).blob();
-        const imageData = yield getImageData(URL.createObjectURL(blob));
-        yield useShader('shaders/fragment/image.glsl');
+        const url = URL.createObjectURL(blob);
+        const imageData = yield getImageData(url);
         myCanvas.width = imageData.width;
         myCanvas.height = imageData.height;
+        yield useShader('shaders/fragment/image.glsl');
+        yield loadTexture(url);
         draw();
     });
-    /****  ****/
+    /**** calls ****/
     yield useShader('shaders/vertex/common.glsl', true);
     // await drawPoints();
     // await drawColor();
-    yield drawTriangle();
-    // await drawImage();
+    // await drawTriangle();
+    yield drawImage();
 }))();

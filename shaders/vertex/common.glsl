@@ -1,7 +1,9 @@
 attribute vec4 a_Position;
+attribute vec2 a_TexCoord;
+varying vec2 v_TexCoord;
 
 void main() {
     gl_Position = a_Position;
-    // gl_Position = vec4(-1.0, -1.0, 1.0, 1.0);
+    v_TexCoord = a_TexCoord;
     gl_PointSize = 10.0;
 }
