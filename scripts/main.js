@@ -95,7 +95,7 @@ const aTexCoord = new Float32Array([
         const size = 2;
         setBuffer('a_Position', positions, size);
         setBuffer('a_TexCoord', aTexCoord, size);
-        setUniform('u_Gamma', Math.pow(2, Number(gammaInput.value)) - 1);
+        setUniform('u_Gamma', 1 / Number(gammaInput.value));
         gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / size);
     };
     /******** runable function ********/
@@ -137,8 +137,8 @@ const aTexCoord = new Float32Array([
     // await drawPoints();
     // await drawColor();
     // await drawTriangle();
-    // const blob = await (await fetch('images/IfmPH.png')).blob();
     const blob = yield (yield fetch('images/IfmPH.png')).blob();
+    // const blob = await (await fetch('images/1.jpg')).blob();
     yield drawImage(blob);
     gammaInput.addEventListener('input', e => drawImage(blob));
 }))();
