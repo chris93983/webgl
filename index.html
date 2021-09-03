@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="scripts/main.js" async defer></script>
+    <script src="scripts/main.js" type="module" async defer></script>
     <title>Edge Detect</title>
     <style>
         body {
+            height: 100vh;
             margin: 0;
             font-family: monospace;
+            
+            image-rendering: pixelated;
+        }
+
+        :not(input) {
             user-select: none;
         }
     </style>
 </head>
 <body>
+    <img src="images/IfmPH.png" width="384" hidden>
+    <input id="inputFile" type="file" accept="image/*" hidden>
     <canvas id="myCanvas"></canvas>
 </body>
 </html>

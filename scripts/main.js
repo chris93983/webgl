@@ -7,43 +7,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const getImageData = (url) => {
-    const image = new Image();
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    image.src = url;
-    return new Promise(resolve => image.onload = () => {
-        canvas.width = image.width;
-        canvas.height = image.height;
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        resolve(imageData);
-    });
-};
-(() => __awaiter(this, void 0, void 0, function* () {
+import { getImageData } from './utils/get-image-data.js';
+const aPositionPoints = new Float32Array([
+    1.0, 1.0, 1.0, 1.0,
+    1.0, -1.0, 1.0, 1.0,
+    -1.0, -1.0, 1.0, 1.0,
+    -1.0, 1.0, 1.0, 1.0,
+    0.0, 0.0, 1.0, 1.0,
+    0.5, 0.5, 1.0, 1.0,
+]);
+const aPosition = new Float32Array([
+    1.0, -1.0,
+    1.0, 1.0,
+    -1.0, 1.0,
+    -1.0, -1.0,
+]);
+const aTexCoord = new Float32Array([
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    0.0, 0.0,
+]);
+(() => __awaiter(void 0, void 0, void 0, function* () {
     const myCanvas = document.querySelector('#myCanvas');
+    const inputFile = document.querySelector('#inputFile');
     const gl = myCanvas.getContext('webgl');
     const program = gl.createProgram();
-    const aPositionPoints = new Float32Array([
-        1.0, 1.0, 1.0, 1.0,
-        1.0, -1.0, 1.0, 1.0,
-        -1.0, -1.0, 1.0, 1.0,
-        -1.0, 1.0, 1.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        0.5, 0.5, 1.0, 1.0,
-    ]);
-    const aPosition = new Float32Array([
-        1.0, -1.0,
-        1.0, 1.0,
-        -1.0, 1.0,
-        -1.0, -1.0,
-    ]);
-    const aTexCoord = new Float32Array([
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-    ]);
-    const useShader = (url, vertex = false) => __awaiter(this, void 0, void 0, function* () {
+    inputFile.addEventListener('change', e => drawImage(inputFile.files[0]));
+    const useShader = (url, vertex = false) => __awaiter(void 0, void 0, void 0, function* () {
         const shaderSource = yield (yield fetch(url)).text();
         const shader = gl.createShader(vertex ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
         gl.shaderSource(shader, shaderSource);
@@ -75,8 +66,8 @@ const getImageData = (url) => {
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // shrinking method.
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // enlarging method.
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
                 gl.uniform1i(uSampler, 0);
                 resolve();
@@ -92,7 +83,7 @@ const getImageData = (url) => {
         gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / size);
     };
     /******** runable function ********/
-    const drawPoints = () => __awaiter(this, void 0, void 0, function* () {
+    const drawPoints = () => __awaiter(void 0, void 0, void 0, function* () {
         clear();
         yield useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
@@ -101,13 +92,13 @@ const getImageData = (url) => {
         setBuffer('a_Position', aPositionPoints, size); // Size 4 means every 4 items in aPositionPoints converts to a gl variable.
         gl.drawArrays(gl.POINTS, 0, aPositionPoints.length / size);
     });
-    const drawColor = () => __awaiter(this, void 0, void 0, function* () {
+    const drawColor = () => __awaiter(void 0, void 0, void 0, function* () {
         clear();
         yield useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
         draw();
     });
-    const drawTriangle = () => __awaiter(this, void 0, void 0, function* () {
+    const drawTriangle = () => __awaiter(void 0, void 0, void 0, function* () {
         clear();
         yield useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
@@ -117,21 +108,23 @@ const getImageData = (url) => {
             -1.0, -1.0,
         ]));
     });
-    const drawImage = () => __awaiter(this, void 0, void 0, function* () {
-        clear();
-        const blob = yield (yield fetch('images/1.jpg')).blob();
-        const url = URL.createObjectURL(blob);
-        const imageData = yield getImageData(url);
-        myCanvas.width = imageData.width;
-        myCanvas.height = imageData.height;
-        yield useShader('shaders/fragment/image.glsl');
-        yield loadTexture(url);
-        draw();
+    const drawImage = (blob) => __awaiter(void 0, void 0, void 0, function* () {
+        if (blob) {
+            clear();
+            const url = URL.createObjectURL(blob);
+            const imageData = yield getImageData(url);
+            myCanvas.width = imageData.width * 3;
+            myCanvas.height = imageData.height * 3;
+            yield useShader('shaders/fragment/image.glsl');
+            yield loadTexture(url);
+            draw();
+        }
     });
     /**** calls ****/
     yield useShader('shaders/vertex/common.glsl', true);
     // await drawPoints();
     // await drawColor();
     // await drawTriangle();
-    yield drawImage();
+    const blob = yield (yield fetch('images/IfmPH.png')).blob();
+    yield drawImage(blob);
 }))();
