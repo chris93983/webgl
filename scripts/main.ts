@@ -25,18 +25,29 @@ const aTexCoord = new Float32Array([
 (async () => {
     const myCanvas = document.querySelector<HTMLCanvasElement>('#myCanvas');
     const inputFile = document.querySelector<HTMLInputElement>('#inputFile');
+    const gammaInput = document.querySelector<HTMLInputElement>('#gamma');
     const gl = myCanvas.getContext('webgl');
     const program = gl.createProgram();
+    let [vShaderAttached, fShaderAttached] = [false, false];
 
     inputFile.addEventListener('change', e => drawImage(inputFile.files[0]));
+    // gammaInput.addEventListener('change', e => drawImage(inputFile.files[0]));
 
     const useShader = async (url: string, vertex = false): Promise<void> => {
-        const shaderSource = await (await fetch(url)).text();
-        const shader = gl.createShader(vertex ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
-        gl.shaderSource(shader, shaderSource);
-        gl.compileShader(shader);
-        gl.attachShader(program, shader);
-        gl.linkProgram(program);
+        if ((vertex && !vShaderAttached) || !fShaderAttached) {
+            const shaderSource = await (await fetch(url)).text();
+            const shader = gl.createShader(vertex ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+            gl.shaderSource(shader, shaderSource);
+            gl.compileShader(shader);
+            gl.attachShader(program, shader);
+            gl.linkProgram(program);
+
+            if (vertex) {
+                vShaderAttached = true;
+            } else {
+                fShaderAttached = true;
+            }
+        }
     };
 
     const clear = (): void => {
@@ -52,6 +63,11 @@ const aTexCoord = new Float32Array([
         const position = gl.getAttribLocation(program, attribute);
         gl.vertexAttribPointer(position, size, gl.FLOAT, false, stride, offset);
         gl.enableVertexAttribArray(position);
+    };
+
+    const setUniform = (uniform: string, data: number): void => {
+        const position = gl.getUniformLocation(program, uniform);
+        gl.uniform1f(position, data);
     };
 
     const loadTexture = (url: string, textureNumber = gl.TEXTURE0): Promise<void> => {
@@ -84,6 +100,7 @@ const aTexCoord = new Float32Array([
         const size = 2;
         setBuffer('a_Position', positions, size);
         setBuffer('a_TexCoord', aTexCoord, size);
+        setUniform('u_Gamma', Math.pow(2, Number(gammaInput.value)) - 1);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / size);
     };
 
@@ -117,13 +134,13 @@ const aTexCoord = new Float32Array([
         ]));
     };
 
-    const drawImage = async (blob: Blob): Promise<void> => {
+    const drawImage = async (blob: Blob, size = 1): Promise<void> => {
         if (blob) {
             clear();
             const url = URL.createObjectURL(blob);
             const imageData = await getImageData(url);
-            myCanvas.width = imageData.width * 3;
-            myCanvas.height = imageData.height * 3;
+            myCanvas.width = imageData.width * size;
+            myCanvas.height = imageData.height * size;
             await useShader('shaders/fragment/image.glsl');
             await loadTexture(url);
             draw();
@@ -136,6 +153,8 @@ const aTexCoord = new Float32Array([
     // await drawPoints();
     // await drawColor();
     // await drawTriangle();
-    const blob = await (await fetch('images/IfmPH.png')).blob();
+    // const blob = await (await fetch('images/IfmPH.png')).blob();
+    const blob = await (await fetch('images/2.jpg')).blob();
     await drawImage(blob);
+    gammaInput.addEventListener('input', e => drawImage(blob));
 })();
