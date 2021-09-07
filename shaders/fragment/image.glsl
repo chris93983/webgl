@@ -1,10 +1,11 @@
 precision highp float;
 varying vec2 v_TexCoord;
+uniform vec2 v_TexSize;
 uniform sampler2D u_Sampler;
 uniform float u_Gamma;
 
 void main() {
-    vec4 texColor = texture2D(u_Sampler, v_TexCoord);
+    vec4 texColor = texture2D(u_Sampler, vec2(v_TexCoord.x, v_TexCoord.y));
     // float distance = 0.005;
     // vec4 leftTop = texture2D(u_Sampler, vec2(v_TexCoord.x - distance / 2.0, v_TexCoord.y + distance / 2.0));
     // vec4 rightTop = texture2D(u_Sampler, vec2(v_TexCoord.x + distance / 2.0, v_TexCoord.y + distance / 2.0));

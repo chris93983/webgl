@@ -68,27 +68,53 @@ const aTexCoord = new Float32Array([
     };
     const setUniform = (uniform, data) => {
         const position = gl.getUniformLocation(program, uniform);
-        gl.uniform1f(position, data);
+        if (typeof data === 'number') {
+            gl.uniform1f(position, data);
+        }
+        else {
+            switch (data.length) {
+                case 1:
+                    gl.uniform1fv(position, data);
+                    break;
+                case 2:
+                    gl.uniform2fv(position, data);
+                    break;
+                case 3:
+                    gl.uniform3fv(position, data);
+                    break;
+                case 4:
+                    gl.uniform4fv(position, data);
+                    break;
+            }
+        }
     };
-    const loadTexture = (url, textureNumber = gl.TEXTURE0) => {
+    const loadTexture = (source, textureNumber = gl.TEXTURE0) => {
         gl.useProgram(program);
         const texture = gl.createTexture();
         const uSampler = gl.getUniformLocation(program, 'u_Sampler');
-        return new Promise(resolve => {
-            textureImage.onload = () => {
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-                gl.activeTexture(textureNumber);
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // shrinking method.
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // enlarging method.
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, textureImage);
-                gl.uniform1i(uSampler, 0);
-                resolve();
-            };
-            textureImage.src = url;
-        });
+        const addTexture = (sourceData) => {
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+            gl.activeTexture(textureNumber);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // shrinking method.
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // enlarging method.
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sourceData);
+            gl.uniform1i(uSampler, 0);
+        };
+        if (source instanceof ImageData) {
+            addTexture(source);
+        }
+        else {
+            return new Promise(resolve => {
+                textureImage.onload = () => {
+                    addTexture(textureImage);
+                    resolve();
+                };
+                textureImage.src = source;
+            });
+        }
     };
     const draw = (positions = aPosition, useProgram = true) => {
         gl.viewport(0, 0, myCanvas.width, myCanvas.height);
@@ -115,11 +141,7 @@ const aTexCoord = new Float32Array([
     const drawTriangle = () => __awaiter(void 0, void 0, void 0, function* () {
         yield useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
-        draw(new Float32Array([
-            1.0, -1.0,
-            1.0, 1.0,
-            -1.0, -1.0,
-        ]));
+        draw(new Float32Array([1.0, -1.0, 1.0, 1.0, -1.0, -1.0]));
     });
     const drawImage = (blob, size = 3) => __awaiter(void 0, void 0, void 0, function* () {
         if (blob) {
@@ -129,6 +151,7 @@ const aTexCoord = new Float32Array([
             myCanvas.height = imageData.height * size;
             yield useShader('shaders/fragment/image.glsl');
             yield loadTexture(url);
+            setUniform('v_TexSize', new Float32Array([myCanvas.width, myCanvas.height]));
             draw();
         }
     });

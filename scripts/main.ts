@@ -66,33 +66,50 @@ const aTexCoord = new Float32Array([
         gl.enableVertexAttribArray(position);
     };
 
-    const setUniform = (uniform: string, data: number): void => {
+    const setUniform = (uniform: string, data: number | Float32Array): void => {
         const position = gl.getUniformLocation(program, uniform);
-        gl.uniform1f(position, data);
+
+        if (typeof data === 'number') {
+            gl.uniform1f(position, data);
+        } else {
+            switch (data.length) {
+                case 1: gl.uniform1fv(position, data); break;
+                case 2: gl.uniform2fv(position, data); break;
+                case 3: gl.uniform3fv(position, data); break;
+                case 4: gl.uniform4fv(position, data); break;
+            }
+        }
     };
 
-    const loadTexture = (url: string, textureNumber = gl.TEXTURE0): Promise<void> => {
+    const loadTexture = (source: string | ImageData, textureNumber = gl.TEXTURE0): Promise<void> => {
         gl.useProgram(program);
         const texture = gl.createTexture();
         const uSampler = gl.getUniformLocation(program, 'u_Sampler');
+        const addTexture = (sourceData: ImageData | HTMLImageElement): void => {
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+            gl.activeTexture(textureNumber);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
 
-        return new Promise(resolve => {
-            textureImage.onload = (): void => {
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-                gl.activeTexture(textureNumber);
-                gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // shrinking method.
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // enlarging method.
 
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // shrinking method.
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // enlarging method.
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sourceData);
+            gl.uniform1i(uSampler, 0);
+        };
 
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, textureImage);
-                gl.uniform1i(uSampler, 0);
-                resolve();
-            };
-            textureImage.src = url;
-        });
+        if (source instanceof ImageData) {
+            addTexture(source);
+        } else {
+            return new Promise(resolve => {
+                textureImage.onload = (): void => {
+                    addTexture(textureImage);
+                    resolve();
+                };
+                textureImage.src = source;
+            });
+        }
     };
 
     const draw = (positions = aPosition, useProgram = true): void => {
@@ -124,11 +141,7 @@ const aTexCoord = new Float32Array([
     const drawTriangle = async (): Promise<void> => {
         await useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
-        draw(new Float32Array([
-            1.0, -1.0,
-            1.0, 1.0,
-            -1.0, -1.0,
-        ]));
+        draw(new Float32Array([1.0, -1.0, 1.0, 1.0, -1.0, -1.0]));
     };
 
     const drawImage = async (blob: Blob, size = 3): Promise<void> => {
@@ -139,6 +152,7 @@ const aTexCoord = new Float32Array([
             myCanvas.height = imageData.height * size;
             await useShader('shaders/fragment/image.glsl');
             await loadTexture(url);
+            setUniform('v_TexSize', new Float32Array([myCanvas.width, myCanvas.height]));
             draw();
         }
     };
