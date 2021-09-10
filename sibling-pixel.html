@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            font-family: monospace;
+            image-rendering: pixelated;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :not(input) {
+            user-select: none;
+        }
+
+        .pixel-container {
+            width: 80px;
+            height: 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            border: solid 1px black;
+            background-color: black;
+            gap: 1px;
+        }
+
+        .pixel-container > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+
+        .pixel-container > div.fill {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <template id="sibling">
+        <div class="pixel-container">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </template>
+    <script>
+        const template = document.querySelector('#sibling').content;
+
+        for (let i = 0; i < 256; i++) {
+            const indexBinary = i.toString(2).padStart(8, "0");
+            const fillList = indexBinary.split('').map(i => !!Number(i));
+            const instance = template.cloneNode(true);
+
+            const cells = Array.from(instance.querySelectorAll('.pixel-container > div'));
+            const centerCell = cells[4];
+            centerCell.innerHTML = i;
+            const siblingCells = Array.from(instance.querySelectorAll('.pixel-container > div:not(:nth-child(5))'));
+            
+            siblingCells.forEach((cell, i) => fillList[i] && cell.classList.add('fill'));
+            document.body.append(instance);
+        }
+    </script>
+</body>
+</html>
