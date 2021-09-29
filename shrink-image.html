@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/shrink-image.js" type="module" async defer></script>
+    <title>Shrink image</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            font-family: monospace;
+            image-rendering: pixelated;
+            gap: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :not(input) {
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <input id="input" type="file" accept="image/*"><br>
+    <input id="targetWidth" type="number" placeholder="width" style="width: 80px;">
+    <input id="targetHeight" type="number" placeholder="height" style="width: 80px;"><br>
+    <button id="btnShrink">Shrink</button><br>
+    <canvas id="canvas"></canvas>
+</body>
+</html>

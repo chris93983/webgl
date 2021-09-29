@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>JavaScript hqx</title>
+	<script type="text/javascript" src="scripts/hqx.js"></script>
+	<script type="text/javascript">
+		const loaded = (img) => {
+			document.body.appendChild(hqx(img, 2));
+			document.body.appendChild(hqx(img, 3));
+			document.body.appendChild(hqx(img, 4));
+		};
+	</script>
+</head>
+<body>
+	<img src="/images/pikachu.png" onload="loaded(this)">
+</body>
+</html>
