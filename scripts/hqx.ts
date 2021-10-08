@@ -1,5 +1,15 @@
+import { interp1, interp2, interp3, interp4, interp5, interp6, interp7, interp8, interp9 } from './utils/interp.js';
+
+const img = document.querySelector<HTMLImageElement>('#img');
+img.onload = () => {
+    document.body.appendChild(hqx(img, 2));
+    document.body.appendChild(hqx(img, 3));
+    document.body.appendChild(hqx(img, 4));
+};
+img.src = './images/pikachu.png';
+
 let src: number[] = null, dest: number[] = null;
-const MASK_2 = 0x00FF00, MASK_13 = 0xFF00FF, Ymask = 0x00FF0000, Umask = 0x0000FF00, Vmask = 0x000000FF, trY = 0x00300000, trU = 0x00000700, trV = 0x00000006;
+const MASK_2 = 0x00FF00, Ymask = 0x00FF0000, Umask = 0x0000FF00, Vmask = 0x000000FF, trY = 0x00300000, trU = 0x00000700, trV = 0x00000006;
 
 const RGBtoYUV = (rgb: number): number => {
     const [r, g, b] = [(rgb & 0xFF0000) >> 16, (rgb & MASK_2) >> 8, rgb & 0x0000FF];
@@ -12,91 +22,6 @@ const diffColor = (rgb1: number, rgb2: number): boolean => {
     // Mask against RGB_MASK to discard the alpha channel
     const [yuv1, yuv2] = [RGBtoYUV(rgb1), RGBtoYUV(rgb2)];
     return ((Math.abs((yuv1 & Ymask) - (yuv2 & Ymask)) > trY) || (Math.abs((yuv1 & Umask) - (yuv2 & Umask)) > trU) || (Math.abs((yuv1 & Vmask) - (yuv2 & Vmask)) > trV));
-};
-
-const interp1 = (c1: number, c2: number): number => {
-    let result: number;
-    //*pc = (c1*3+c2) >> 2;
-    if (c1 === c2) {
-        return c1;
-    }
-    result = ((((c1 & MASK_2) * 3 + (c2 & MASK_2)) >> 2) & MASK_2) + ((((c1 & MASK_13) * 3 + (c2 & MASK_13)) >> 2) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp2 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*2+c2+c3) >> 2;
-    result = (((((c1 & MASK_2) << 1) + (c2 & MASK_2) + (c3 & MASK_2)) >> 2) & MASK_2) + (((((c1 & MASK_13) << 1) + (c2 & MASK_13) + (c3 & MASK_13)) >> 2) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp3 = (c1: number, c2: number): number => {
-    let result: number;
-    //*pc = (c1*7+c2)/8;
-    if (c1 === c2) {
-        return c1;
-    }
-    result = ((((c1 & MASK_2) * 7 + (c2 & MASK_2)) >> 3) & MASK_2) + ((((c1 & MASK_13) * 7 + (c2 & MASK_13)) >> 3) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp4 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*2+(c2+c3)*7)/16;
-    result = (((((c1 & MASK_2) << 1) + (c2 & MASK_2) * 7 + (c3 & MASK_2) * 7) >> 4) & MASK_2) +
-        (((((c1 & MASK_13) << 1) + (c2 & MASK_13) * 7 + (c3 & MASK_13) * 7) >> 4) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp5 = (c1: number, c2: number): number => {
-    let result: number;
-    //*pc = (c1+c2) >> 1;
-    if (c1 === c2) {
-        return c1;
-    }
-    result = ((((c1 & MASK_2) + (c2 & MASK_2)) >> 1) & MASK_2) + ((((c1 & MASK_13) + (c2 & MASK_13)) >> 1) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp6 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*5+c2*2+c3)/8;
-    result = ((((c1 & MASK_2) * 5 + ((c2 & MASK_2) << 1) + (c3 & MASK_2)) >> 3) & MASK_2) + ((((c1 & MASK_13) * 5 + ((c2 & MASK_13) << 1) + (c3 & MASK_13)) >> 3) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp7 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*6+c2+c3)/8;
-    result = ((((c1 & MASK_2) * 6 + (c2 & MASK_2) + (c3 & MASK_2)) >> 3) & MASK_2) + ((((c1 & MASK_13) * 6 + (c2 & MASK_13) + (c3 & MASK_13)) >> 3) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp8 = (c1: number, c2: number): number => {
-    let result: number;
-    //*pc = (c1*5+c2*3)/8;
-    if (c1 === c2) {
-        return c1;
-    }
-    result = ((((c1 & MASK_2) * 5 + (c2 & MASK_2) * 3) >> 3) & MASK_2) + ((((c1 & MASK_13) * 5 + (c2 & MASK_13) * 3) >> 3) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp9 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*2+(c2+c3)*3)/8;
-    result = (((((c1 & MASK_2) << 1) + (c2 & MASK_2) * 3 + (c3 & MASK_2) * 3) >> 3) & MASK_2) +
-        (((((c1 & MASK_13) << 1) + (c2 & MASK_13) * 3 + (c3 & MASK_13) * 3) >> 3) & MASK_13);
-    return result |= (c1 & 0xFF000000);
-};
-
-const interp10 = (c1: number, c2: number, c3: number): number => {
-    let result: number;
-    //*pc = (c1*14+c2+c3)/16;
-    result = ((((c1 & MASK_2) * 14 + (c2 & MASK_2) + (c3 & MASK_2)) >> 4) & MASK_2) +
-        ((((c1 & MASK_13) * 14 + (c2 & MASK_13) + (c3 & MASK_13)) >> 4) & MASK_13);
-    return result |= (c1 & 0xFF000000);
 };
 
 const getVendorAttribute = (el: CanvasRenderingContext2D, attr: string): any => {
