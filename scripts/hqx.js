@@ -122,15 +122,12 @@ const hqx = (img, scale) => {
     const count = img.width * img.height;
     src = new Array(count);
     let index;
-    console.log('origPixels', origPixels, origPixels.length);
     for (let i = 0; i < count; i++) {
-        //
         src[i] = (origPixels[(index = i << 2) + 3] << 24) + (origPixels[index + 2] << 16) + (origPixels[index + 1] << 8) + origPixels[index];
         // console.log('src[i]1', i, src[i], src[i].toString(2), src[i].toString(16), );
         // src[i] = (origPixels[index = i * 4] << 24) + (origPixels[index + 1] << 16) + (origPixels[index + 2] << 8) + origPixels[index + 3];
         // console.log('src[i]2', i, src[i], src[i].toString(2), src[i].toString(16), origPixels[i * 4], origPixels[i * 4 + 1], origPixels[i * 4 + 2], origPixels[i * 4 + 3]);
     }
-    console.log('src', src);
     // let dest: number[];
     if (scale === 2)
         dest = hq2x(img.width, img.height);
