@@ -18,9 +18,20 @@ const RGBtoYUV = (rgb: number): number => {
         (/*v=*/((0.5 * r - 0.419 * g - 0.081 * b) + 128) | 0);
 };
 
+const RGBAtoYUV = (rgb: number): number => {
+    // const [r, g, b] = [(rgba & 0xFF000000) >> 24, (rgba & 0x00FF0000) >> 16, (rgba & 0x0000FF00) >> 8];
+    // return ((/*y=*/(0.299 * r + 0.587 * g + 0.114 * b) | 0) << 16) +
+    //     ((/*u=*/((-0.169 * r - 0.331 * g + 0.5 * b) + 128) | 0) << 8) +
+    //     (/*v=*/((0.5 * r - 0.419 * g - 0.081 * b) + 128) | 0);
+    const [r, g, b] = [(rgb & 0xFF0000) >> 16, (rgb & MASK_2) >> 8, rgb & 0x0000FF];
+    return ((/*y=*/(0.299 * r + 0.587 * g + 0.114 * b) | 0) << 16) +
+        ((/*u=*/((-0.169 * r - 0.331 * g + 0.5 * b) + 128) | 0) << 8) +
+        (/*v=*/((0.5 * r - 0.419 * g - 0.081 * b) + 128) | 0);
+};
+
 const diffColor = (rgb1: number, rgb2: number): boolean => {
     // Mask against RGB_MASK to discard the alpha channel
-    const [yuv1, yuv2] = [RGBtoYUV(rgb1), RGBtoYUV(rgb2)];
+    const [yuv1, yuv2] = [RGBAtoYUV(rgb1), RGBAtoYUV(rgb2)];
     return ((Math.abs((yuv1 & Ymask) - (yuv2 & Ymask)) > trY) || (Math.abs((yuv1 & Umask) - (yuv2 & Umask)) > trU) || (Math.abs((yuv1 & Vmask) - (yuv2 & Vmask)) > trV));
 };
 
@@ -67,6 +78,10 @@ const hqx = (img: HTMLImageElement | HTMLCanvasElement, scale: 2 | 3 | 4): HTMLI
 
     for (let i = 0; i < count; i++) {
         src[i] = (origPixels[(index = i << 2) + 3] << 24) + (origPixels[index + 2] << 16) + (origPixels[index + 1] << 8) + origPixels[index];
+        // src[i] = (origPixels[(index = i << 2) + 3] * (1 << 24)) + (origPixels[index + 2] << 16) + (origPixels[index + 1] << 8) + origPixels[index];
+        // console.log('src', src[i]);
+        // console.log('abgr', origPixels[(index = i << 2) + 3], (origPixels[index + 2] << 16), (origPixels[index + 1] << 8), origPixels[index]);
+        // console.log('abgr-16', (origPixels[(index = i << 2) + 3] * (1 << 24)).toString(16), (origPixels[index + 2] << 16).toString(16), (origPixels[index + 1] << 8).toString(16), origPixels[index].toString(16));
         // console.log('src[i]1', i, src[i], src[i].toString(2), src[i].toString(16), );
         // src[i] = (origPixels[index = i * 4] << 24) + (origPixels[index + 1] << 16) + (origPixels[index + 2] << 8) + origPixels[index + 3];
         // console.log('src[i]2', i, src[i], src[i].toString(2), src[i].toString(16), origPixels[i * 4], origPixels[i * 4 + 1], origPixels[i * 4 + 2], origPixels[i * 4 + 3]);
@@ -161,14 +176,14 @@ const hq2x = (width: number, height: number): Array<number> => {
             let pattern = 0;
             let flag = 1;
 
-            YUV1 = RGBtoYUV(w[5]);
+            YUV1 = RGBAtoYUV(w[5]);
 
             //for (k=1; k<=9; k++) optimized
             for (let k = 1; k < 10; k++) { // k<=9
                 if (k === 5) continue;
 
                 if (w[k] !== w[5]) {
-                    YUV2 = RGBtoYUV(w[k]);
+                    YUV2 = RGBAtoYUV(w[k]);
                     if ((Math.abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY) ||
                         (Math.abs((YUV1 & Umask) - (YUV2 & Umask)) > trU) ||
                         (Math.abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV))
@@ -2038,14 +2053,14 @@ const hq3x = (width: number, height: number): Array<number> => {
             let pattern = 0;
             let flag = 1;
 
-            YUV1 = RGBtoYUV(w[5]);
+            YUV1 = RGBAtoYUV(w[5]);
 
             //for (k=1; k<=9; k++) optimized
             for (let k = 1; k < 10; k++) { // k<=9
                 if (k === 5) continue;
 
                 if (w[k] !== w[5]) {
-                    YUV2 = RGBtoYUV(w[k]);
+                    YUV2 = RGBAtoYUV(w[k]);
                     if ((Math.abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY) ||
                         (Math.abs((YUV1 & Umask) - (YUV2 & Umask)) > trU) ||
                         (Math.abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV))
@@ -4995,7 +5010,7 @@ const hq4x = (width: number, height: number): Array<number> => {
             let pattern = 0;
             let flag = 1;
 
-            YUV1 = RGBtoYUV(w[5]);
+            YUV1 = RGBAtoYUV(w[5]);
 
             //for (k=1; k<=9; k++) optimized
             for (let k = 1; k < 10; k++) // k<=9
@@ -5003,7 +5018,7 @@ const hq4x = (width: number, height: number): Array<number> => {
                 if (k === 5) continue;
 
                 if (w[k] !== w[5]) {
-                    YUV2 = RGBtoYUV(w[k]);
+                    YUV2 = RGBAtoYUV(w[k]);
                     if ((Math.abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY) ||
                         (Math.abs((YUV1 & Umask) - (YUV2 & Umask)) > trU) ||
                         (Math.abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV))
