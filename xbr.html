@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xBR</title>
+</head>
+<body>
+    <canvas id="input"></canvas>
+    <canvas id="output"></canvas>
+    <script type="module">
+        import { xBR } from './scripts/xbr.js';
+
+        const [input, output] = [document.querySelector('#input'), document.querySelector('#output')];
+        const [contextInput, contextOutput] = [input.getContext('2d'), output.getContext('2d')];
+        const image = new Image();
+        image.onload = () => {
+            input.width = image.width;
+            input.height = image.height;
+            contextInput.drawImage(image, 0, 0);
+
+            const outputImageData = xBR(contextInput);
+            output.width = outputImageData.width;
+            output.height = outputImageData.height;
+            contextOutput.putImageData(outputImageData, 0, 0);
+            console.log('outputImageData', outputImageData, contextOutput);
+        };
+        // image.src = './images/pikachu.png';
+        // image.src = './images/code.png';
+        image.src = './images/dolphin_small.png';
+        // image.src = './images/1.jpg';
+        // image.src = './images/test.png';
+    </script>
+</body>
+</html>
