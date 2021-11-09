@@ -1,27 +1,24 @@
 // 2xBR
 const SCALE = 2;
 
-// Bit Masks used to extract color chanels from a 32bit pixel
-const [REDMASK, GREENMASK, BLUEMASK, ALPHAMASK] = [0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000];
-
 // Weights should emphasize luminance (Y), in order to work. Feel free to experiment.
 const [Y_WEIGHT, U_WEIGHT, V_WEIGHT] = [48, 7, 6];
 
 class Pixel {
     get red(): number {
-        return this.value & REDMASK;
+        return this.value & 0x000000FF;
     }
 
     get green(): number {
-        return (this.value & GREENMASK) >> 8;
+        return (this.value & 0x0000FF00) >> 8;
     }
 
     get blue(): number {
-        return (this.value & BLUEMASK) >> 16;
+        return (this.value & 0x00FF0000) >> 16;
     }
 
     get alpha(): number {
-        return (this.value & ALPHAMASK) >> 24;
+        return (this.value & 0xFF000000) >> 24;
     }
 
     constructor(public value = 0) {}
@@ -63,15 +60,9 @@ const abs = (x: number): number => {
 * Calculates the weighted difference between two pixels.
 * 
 * These are the steps:
-*
 * 1. Finds absolute color diference between two pixels.
 * 2. Converts color difference into Y'UV, seperating color from light.
 * 3. Applies Y'UV thresholds, giving importance to luminance.
-* 
-* @method d
-* @param pixelA {Pixel}
-* @param pixelB {Pixel}
-* @return Number
 */
 const calcWeightedDifference = (pixelA: Pixel, pixelB: Pixel): number => {
     const r = abs(pixelA.red - pixelB.red);
@@ -96,7 +87,7 @@ const calcWeightedDifference = (pixelA: Pixel, pixelB: Pixel): number => {
 * @param alpha {Number}
 * @return Pixel
 */
-const blend = (pixelA: Pixel, pixelB: Pixel, alpha: number) => {
+const blend = (pixelA: Pixel, pixelB: Pixel, alpha: number): Pixel => {
     const reverseAlpha = 1 - alpha;
     const r = (alpha * pixelB.red) + (reverseAlpha * pixelA.red);
     const g = (alpha * pixelB.green) + (reverseAlpha * pixelA.green);
@@ -108,21 +99,13 @@ export const xBR = (context: CanvasRenderingContext2D, srcX = 0, srcY = 0, srcW 
     // original
     const oImageData = context.getImageData(srcX, srcY, srcW, srcH);
     const oPixelView = new Uint32Array(oImageData.data.buffer);
+    console.log('oImageData', oImageData, oImageData.data.buffer);
+    console.log('oPixelView', Array.from(oPixelView).map(color => color.toString(16)));
 
     // scaled
     const [scaledWidth, scaledHeight] = [srcW * SCALE, srcH * SCALE];
     const sImageData = context.createImageData(scaledWidth, scaledHeight);
     const sPixelView = new Uint32Array(sImageData.data.buffer);
-
-    /**
-    * Converts x,y coordinates into an index pointing to the same pixel
-    * in a Uint32Array.
-    *
-    * @method coord2index
-    * @param x {Number}
-    * @param y {Number}
-    * @return Number
-    */
     const coord2index = (x: number, y: number): number => srcW * y + x;
 
     /*

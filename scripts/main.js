@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { getImageData } from './utils/get-image-data.js';
 const aPositionPoints = new Float32Array([
     1.0, 1.0, 1.0, 1.0,
@@ -28,7 +19,7 @@ const aTexCoord = new Float32Array([
     0.0, 1.0,
     0.0, 0.0,
 ]);
-(() => __awaiter(void 0, void 0, void 0, function* () {
+(async () => {
     const myCanvas = document.querySelector('#myCanvas');
     const inputFile = document.querySelector('#inputFile');
     const gammaInput = document.querySelector('#gamma');
@@ -38,9 +29,9 @@ const aTexCoord = new Float32Array([
     let [vShaderAttached, fShaderAttached] = [false, false];
     inputFile.addEventListener('change', e => drawImage(inputFile.files[0]));
     // gammaInput.addEventListener('change', e => drawImage(inputFile.files[0]));
-    const useShader = (url, vertex = false) => __awaiter(void 0, void 0, void 0, function* () {
+    const useShader = async (url, vertex = false) => {
         if ((vertex && !vShaderAttached) || !fShaderAttached) {
-            const shaderSource = yield (yield fetch(url)).text();
+            const shaderSource = await (await fetch(url)).text();
             const shader = gl.createShader(vertex ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
             gl.shaderSource(shader, shaderSource);
             gl.compileShader(shader);
@@ -53,7 +44,7 @@ const aTexCoord = new Float32Array([
                 fShaderAttached = true;
             }
         }
-    });
+    };
     const clear = () => {
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -125,43 +116,43 @@ const aTexCoord = new Float32Array([
         gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / size);
     };
     /******** runable function ********/
-    const drawPoints = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield useShader('shaders/fragment/color.glsl');
+    const drawPoints = async () => {
+        await useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
         gl.viewport(0, 0, myCanvas.width, myCanvas.height);
         const size = 4;
         setBuffer('a_Position', aPositionPoints, size); // Size 4 means every 4 items in aPositionPoints converts to a gl variable.
         gl.drawArrays(gl.POINTS, 0, aPositionPoints.length / size);
-    });
-    const drawColor = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield useShader('shaders/fragment/color.glsl');
+    };
+    const drawColor = async () => {
+        await useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
         draw();
-    });
-    const drawTriangle = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield useShader('shaders/fragment/color.glsl');
+    };
+    const drawTriangle = async () => {
+        await useShader('shaders/fragment/color.glsl');
         gl.useProgram(program);
         draw(new Float32Array([1.0, -1.0, 1.0, 1.0, -1.0, -1.0]));
-    });
-    const drawImage = (blob, size = 3) => __awaiter(void 0, void 0, void 0, function* () {
+    };
+    const drawImage = async (blob, size = 3) => {
         if (blob) {
             const url = URL.createObjectURL(blob);
-            const imageData = yield getImageData(url);
+            const imageData = await getImageData(url);
             myCanvas.width = imageData.width * size;
             myCanvas.height = imageData.height * size;
-            yield useShader('shaders/fragment/image.glsl');
-            yield loadTexture(url);
+            await useShader('shaders/fragment/image.glsl');
+            await loadTexture(url);
             setUniform('v_TexSize', new Float32Array([myCanvas.width, myCanvas.height]));
             draw();
         }
-    });
+    };
     /**** calls ****/
-    yield useShader('shaders/vertex/common.glsl', true);
+    await useShader('shaders/vertex/common.glsl', true);
     // await drawPoints();
     // await drawColor();
     // await drawTriangle();
-    const blob = yield (yield fetch('images/IfmPH.png')).blob();
+    const blob = await (await fetch('images/IfmPH.png')).blob();
     // const blob = await (await fetch('images/1.jpg')).blob();
-    yield drawImage(blob);
+    await drawImage(blob);
     gammaInput.addEventListener('input', e => drawImage(blob));
-}))();
+})();

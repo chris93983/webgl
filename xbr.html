@@ -9,11 +9,12 @@
 <body>
     <canvas id="input"></canvas>
     <canvas id="output"></canvas>
+    <canvas id="output2"></canvas>
     <script type="module">
         import { xBR } from './scripts/xbr.js';
 
-        const [input, output] = [document.querySelector('#input'), document.querySelector('#output')];
-        const [contextInput, contextOutput] = [input.getContext('2d'), output.getContext('2d')];
+        const [input, output, output2] = [document.querySelector('#input'), document.querySelector('#output'), document.querySelector('#output2')];
+        const [contextInput, contextOutput, contextOutput2] = [input.getContext('2d'), output.getContext('2d'), output2.getContext('2d')];
         const image = new Image();
         image.onload = () => {
             input.width = image.width;
@@ -25,10 +26,15 @@
             output.height = outputImageData.height;
             contextOutput.putImageData(outputImageData, 0, 0);
             console.log('outputImageData', outputImageData, contextOutput);
+
+            const output2ImageData = xBR(contextOutput);
+            output2.width = output2ImageData.width;
+            output2.height = output2ImageData.height;
+            contextOutput2.putImageData(output2ImageData, 0, 0);
         };
-        // image.src = './images/pikachu.png';
+        image.src = './images/pikachu.png';
         // image.src = './images/code.png';
-        image.src = './images/dolphin_small.png';
+        // image.src = './images/dolphin_small.png';
         // image.src = './images/1.jpg';
         // image.src = './images/test.png';
     </script>
