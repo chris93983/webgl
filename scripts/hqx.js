@@ -5,7 +5,7 @@ img.onload = () => {
     document.body.appendChild(hqx(img, 3));
     document.body.appendChild(hqx(img, 4));
 };
-img.src = './images/pikachu.png';
+img.src = './images/emeral.png';
 let src = null, dest = null;
 const MASK_2 = 0x00FF00, Ymask = 0x00FF0000, Umask = 0x0000FF00, Vmask = 0x000000FF, trY = 0x00300000, trU = 0x00000700, trV = 0x00000006;
 const RGBtoYUV = (rgb) => {

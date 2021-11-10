@@ -5,13 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xBR</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #input {
+            display: block;
+            transform: scale(2) translate(50%, 50%);
+            transform-origin: bottom right;
+            image-rendering: pixelated;
+        }
+
+        #output {
+            transform: translateY(50%);
+        }
+    </style>
 </head>
 <body>
     <canvas id="input"></canvas>
     <canvas id="output"></canvas>
     <canvas id="output2"></canvas>
     <script type="module">
-        import { xBR } from './scripts/xbr.js';
+        import { xBR } from './scripts/xbr2x.js';
 
         const [input, output, output2] = [document.querySelector('#input'), document.querySelector('#output'), document.querySelector('#output2')];
         const [contextInput, contextOutput, contextOutput2] = [input.getContext('2d'), output.getContext('2d'), output2.getContext('2d')];
@@ -27,12 +43,13 @@
             contextOutput.putImageData(outputImageData, 0, 0);
             console.log('outputImageData', outputImageData, contextOutput);
 
-            const output2ImageData = xBR(contextOutput);
-            output2.width = output2ImageData.width;
-            output2.height = output2ImageData.height;
-            contextOutput2.putImageData(output2ImageData, 0, 0);
+            // const output2ImageData = xBR(contextOutput);
+            // output2.width = output2ImageData.width;
+            // output2.height = output2ImageData.height;
+            // contextOutput2.putImageData(output2ImageData, 0, 0);
         };
-        image.src = './images/pikachu.png';
+        // image.src = './images/pikachu.png';
+        image.src = './images/emeral.png';
         // image.src = './images/code.png';
         // image.src = './images/dolphin_small.png';
         // image.src = './images/1.jpg';

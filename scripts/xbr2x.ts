@@ -41,20 +41,8 @@ const matrix = Object.freeze([
 
 /**
 * Returns the absolute value of a number.
-*
-* **Note** 
-* `return (x >> 31) ^ x + (x >> 31)` also works (w/out a mask)
-*
-* @method abs
-* @param x {Number}
-* @return Number
 */
-const abs = (x: number): number => {
-    const mask = x >> 31;
-    x = x ^ mask;
-    x = x - mask;
-    return x;
-};
+const abs = (x: number): number => (x >> 31) ^ x + (x >> 31);
 
 /**
 * Calculates the weighted difference between two pixels.
