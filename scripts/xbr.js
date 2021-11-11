@@ -141,7 +141,7 @@ const getRelatedPoints = (oriPixelView, oriX, oriY, oriW, oriH) => {
 // This is the XBR2x by Hyllian (see http://board.byuu.org/viewtopic.php?f=10&t=2248)
 const computeXbr2x = (oriPixelView, oriX, oriY, oriW, oriH, dstPixelView, dstX, dstY, dstW, options) => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5] = relatedPoints;
+    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5,] = relatedPoints;
     let e0, e1, e2, e3;
     e0 = e1 = e2 = e3 = pe;
     [e1, e2, e3] = kernel2Xv5(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e1, e2, e3, options);
@@ -155,7 +155,7 @@ const computeXbr2x = (oriPixelView, oriX, oriY, oriW, oriH, dstPixelView, dstX, 
 };
 const computeXbr3x = (oriPixelView, oriX, oriY, oriW, oriH, dstPixelView, dstX, dstY, dstW, options) => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5] = relatedPoints;
+    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5,] = relatedPoints;
     let e0, e1, e2, e3, e4, e5, e6, e7, e8;
     e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = pe;
     [e2, e5, e6, e7, e8] = kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e2, e5, e6, e7, e8, options);
@@ -174,7 +174,7 @@ const computeXbr3x = (oriPixelView, oriX, oriY, oriW, oriH, dstPixelView, dstX, 
 };
 const computeXbr4x = (oriPixelView, oriX, oriY, oriW, oriH, dstPixelView, dstX, dstY, dstW, options) => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5] = relatedPoints;
+    const [a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5,] = relatedPoints;
     let e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, ea, eb, ec, ed, ee, ef;
     e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = e9 = ea = eb = ec = ed = ee = ef = pe;
     [ef, ee, eb, e3, e7, ea, ed, ec] = kernel4Xv2(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, ef, ee, eb, e3, e7, ea, ed, ec, options);

@@ -165,8 +165,8 @@ const getRelatedPoints = (oriPixelView: Uint32Array, oriX: number, oriY: number,
 // This is the XBR2x by Hyllian (see http://board.byuu.org/viewtopic.php?f=10&t=2248)
 const computeXbr2x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const
-        [a1,
+    const [
+            a1,
             b1,
             c1,
             a0,
@@ -186,8 +186,9 @@ const computeXbr2x = (oriPixelView: Uint32Array, oriX: number, oriY: number, ori
             i4,
             g5,
             h5,
-            i5] = relatedPoints;
-    let e0, e1, e2, e3;
+            i5,
+        ] = relatedPoints;
+    let e0: number, e1: number, e2: number, e3: number;
     e0 = e1 = e2 = e3 = pe;
 
     [e1, e2, e3] = kernel2Xv5(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e1, e2, e3, options);
@@ -203,8 +204,8 @@ const computeXbr2x = (oriPixelView: Uint32Array, oriX: number, oriY: number, ori
 
 const computeXbr3x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const
-        [a1,
+    const [
+            a1,
             b1,
             c1,
             a0,
@@ -224,8 +225,9 @@ const computeXbr3x = (oriPixelView: Uint32Array, oriX: number, oriY: number, ori
             i4,
             g5,
             h5,
-            i5] = relatedPoints;
-    let e0, e1, e2, e3, e4, e5, e6, e7, e8;
+            i5,
+        ] = relatedPoints;
+    let e0: number, e1: number, e2: number, e3: number, e4: number, e5: number, e6: number, e7: number, e8: number;
     e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = pe;
 
 
@@ -247,8 +249,8 @@ const computeXbr3x = (oriPixelView: Uint32Array, oriX: number, oriY: number, ori
 
 const computeXbr4x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
-    const
-        [a1,
+    const [
+            a1,
             b1,
             c1,
             a0,
@@ -268,7 +270,8 @@ const computeXbr4x = (oriPixelView: Uint32Array, oriX: number, oriY: number, ori
             i4,
             g5,
             h5,
-            i5] = relatedPoints;
+            i5,
+        ] = relatedPoints;
     let e0: number, e1: number, e2: number, e3: number, e4: number, e5: number, e6: number, e7: number, e8: number, e9: number, ea: number, eb: number, ec: number, ed: number, ee: number, ef: number;
     e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = e9 = ea = eb = ec = ed = ee = ef = pe;
 
