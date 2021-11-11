@@ -5,25 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xBR2x</title>
-    <style>
-        body {
-            margin: 0;
-        }
-
-        #input {
-            display: block;
-            transform: scale(2) translate(50%, 50%);
-            transform-origin: bottom right;
-            image-rendering: pixelated;
-        }
-
-        #output {
-            transform: translateY(50%);
-        }
-    </style>
+    <link rel="stylesheet" href="./styles/common.css">
 </head>
 <body>
-    <canvas id="input"></canvas>
+    <canvas id="input" class="pixelated2"></canvas>
     <canvas id="output"></canvas>
     <canvas id="output2"></canvas>
     <script type="module">
@@ -34,15 +19,16 @@
         const [contextInput, contextOutput, contextOutput2] = [input.getContext('2d'), output.getContext('2d'), output2.getContext('2d')];
 
         const image = await createImageFromFile('./images/emeral.png');
+        // const image = await createImageFromFile('./images/advancewars.png');
         input.width = image.width;
         input.height = image.height;
         contextInput.drawImage(image, 0, 0);
+        input.style.marginBottom = `${input.height}px`;
 
         const outputImageData = xBR(contextInput);
         output.width = outputImageData.width;
         output.height = outputImageData.height;
         contextOutput.putImageData(outputImageData, 0, 0);
-        console.log('outputImageData', outputImageData, contextOutput);
 
         // const output2ImageData = xBR(contextOutput);
         // output2.width = output2ImageData.width;

@@ -5,23 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XBR</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin: 0;
-        }
-
-        #input {
-            transform: scale(2) translate(50%, 50%);
-            transform-origin: bottom right;
-            image-rendering: pixelated;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles/common.css">
 </head>
 <body>
-    <canvas id="input"></canvas>
+    <canvas id="input" class="pixelated2"></canvas>
     <canvas id="output2x"></canvas>
     <canvas id="output3x"></canvas>
     <canvas id="output4x"></canvas>
@@ -33,9 +20,8 @@
         const [contextInput, contextOutput2x, contextOutput3x, contextOutput4x] = [input.getContext('2d'), output2x.getContext('2d'), output3x.getContext('2d'), output4x.getContext('2d')];
 
         // const image = await createImageFromFile('./images/test.png');
-        const image = await createImageFromFile('./images/advancewars.png');
-
-        // const image = await createImageFromFile('./images/emeral.png');
+        // const image = await createImageFromFile('./images/advancewars.png');
+        const image = await createImageFromFile('./images/emeral.png');
         // const image = await createImageFromFile('./images/pokemon.png');
         // const image = await createImageFromFile('./images/finalfantacy.png');
 

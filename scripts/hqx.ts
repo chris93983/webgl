@@ -5,7 +5,9 @@ img.onload = () => {
     document.body.appendChild(hqx(img, 2));
     document.body.appendChild(hqx(img, 3));
     document.body.appendChild(hqx(img, 4));
+    img.style.marginBottom = `${img.height}px`;
 };
+// img.src = './images/advancewars.png';
 img.src = './images/emeral.png';
 
 let src: number[] = null, dest: number[] = null;
