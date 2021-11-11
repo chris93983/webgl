@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>xBR</title>
+    <title>xBR2x</title>
     <style>
         body {
             margin: 0;
@@ -28,32 +28,26 @@
     <canvas id="output2"></canvas>
     <script type="module">
         import { xBR } from './scripts/xbr2x.js';
+        import { createImageFromFile } from './scripts/utils/create-image-from-file.js';
 
         const [input, output, output2] = [document.querySelector('#input'), document.querySelector('#output'), document.querySelector('#output2')];
         const [contextInput, contextOutput, contextOutput2] = [input.getContext('2d'), output.getContext('2d'), output2.getContext('2d')];
-        const image = new Image();
-        image.onload = () => {
-            input.width = image.width;
-            input.height = image.height;
-            contextInput.drawImage(image, 0, 0);
 
-            const outputImageData = xBR(contextInput);
-            output.width = outputImageData.width;
-            output.height = outputImageData.height;
-            contextOutput.putImageData(outputImageData, 0, 0);
-            console.log('outputImageData', outputImageData, contextOutput);
+        const image = await createImageFromFile('./images/emeral.png');
+        input.width = image.width;
+        input.height = image.height;
+        contextInput.drawImage(image, 0, 0);
 
-            // const output2ImageData = xBR(contextOutput);
-            // output2.width = output2ImageData.width;
-            // output2.height = output2ImageData.height;
-            // contextOutput2.putImageData(output2ImageData, 0, 0);
-        };
-        // image.src = './images/pikachu.png';
-        image.src = './images/emeral.png';
-        // image.src = './images/code.png';
-        // image.src = './images/dolphin_small.png';
-        // image.src = './images/1.jpg';
-        // image.src = './images/test.png';
+        const outputImageData = xBR(contextInput);
+        output.width = outputImageData.width;
+        output.height = outputImageData.height;
+        contextOutput.putImageData(outputImageData, 0, 0);
+        console.log('outputImageData', outputImageData, contextOutput);
+
+        // const output2ImageData = xBR(contextOutput);
+        // output2.width = output2ImageData.width;
+        // output2.height = output2ImageData.height;
+        // contextOutput2.putImageData(output2ImageData, 0, 0);
     </script>
 </body>
 </html>

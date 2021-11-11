@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XBR</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 0;
+        }
+
+        #input {
+            transform: scale(2) translate(50%, 50%);
+            transform-origin: bottom right;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="input"></canvas>
+    <canvas id="output2x"></canvas>
+    <canvas id="output3x"></canvas>
+    <canvas id="output4x"></canvas>
+    <script type="module">
+        import { createImageFromFile } from './scripts/utils/create-image-from-file.js';
+        import { xbr2x, xbr3x, xbr4x } from './scripts/xbr.js';
+
+        const [input, output2x, output3x, output4x] = document.querySelectorAll('canvas');
+        const [contextInput, contextOutput2x, contextOutput3x, contextOutput4x] = [input.getContext('2d'), output2x.getContext('2d'), output3x.getContext('2d'), output4x.getContext('2d')];
+
+        // const image = await createImageFromFile('./images/test.png');
+        const image = await createImageFromFile('./images/advancewars.png');
+
+        // const image = await createImageFromFile('./images/emeral.png');
+        // const image = await createImageFromFile('./images/pokemon.png');
+        // const image = await createImageFromFile('./images/finalfantacy.png');
+
+        input.width = image.width;
+        input.height = image.height;
+        contextInput.drawImage(image, 0, 0);
+        input.style.marginBottom = `${input.height}px`;
+
+        output2x.width = image.width * 2;
+        output2x.height = image.height * 2;
+        output3x.width = image.width * 3;
+        output3x.height = image.height * 3;
+        output4x.width = image.width * 4;
+        output4x.height = image.height * 4;
+
+        const inputImageData = contextInput.getImageData(0, 0, input.width, input.height);
+        const inputUnit32Array = new Uint32Array(inputImageData.data.buffer);
+        const [result2x, result3x, result4x] = [xbr2x(inputUnit32Array, input.width, input.height), xbr3x(inputUnit32Array, input.width, input.height), xbr4x(inputUnit32Array, input.width, input.height)];
+        const [output2xData, output3xData, output4xData] = [
+            contextOutput2x.createImageData(input.width * 2, input.height * 2),
+            contextOutput3x.createImageData(input.width * 3, input.height * 3),
+            contextOutput4x.createImageData(input.width * 4, input.height * 4),
+        ];
+
+        output2xData.data.set(new Uint8ClampedArray(result2x.buffer));
+        contextOutput2x.putImageData(output2xData, 0, 0);
+        output3xData.data.set(new Uint8ClampedArray(result3x.buffer));
+        contextOutput3x.putImageData(output3xData, 0, 0);
+        output4xData.data.set(new Uint8ClampedArray(result4x.buffer));
+        contextOutput4x.putImageData(output4xData, 0, 0);
+    </script>
+</body>
+</html>

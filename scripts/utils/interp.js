@@ -5,7 +5,7 @@ export const interp1 = (c1, c2) => {
     if (c1 === c2) {
         return c1;
     }
-    console.log('interp1', c1, c2);
+    // console.log('interp1', c1, c2);
     result = ((((c1 & MASK_2) * 3 + (c2 & MASK_2)) >> 2) & MASK_2) + ((((c1 & MASK_13) * 3 + (c2 & MASK_13)) >> 2) & MASK_13);
     return result |= (c1 & MASK_1);
 };
