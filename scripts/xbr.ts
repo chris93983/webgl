@@ -319,7 +319,7 @@ const up2_2X = (n3: number, n1: number, pixel, blendColors: boolean) => [alphaBl
 
 const dia_2X = (n3: number, pixel, blendColors: boolean) => alphaBlend128W(n3, pixel, blendColors);
 
-const kernel2Xv5 = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n1, n2, n3, options: XBROptions) => {
+const kernel2Xv5 = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n1, n2, n3, options: XBROptions): number[] => {
     let ex = (pe !== ph && pe !== pf);
 
     if (!ex) {
@@ -355,24 +355,24 @@ const kernel2Xv5 = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n1, n2, n3, 
     return [n1, n2, n3];
 };
 
-const leftUp2_3X = (n7, n5, n6, n2, n8, pixel, blendColors: boolean) => {
+const leftUp2_3X = (n7, n5, n6, n2, n8, pixel: number, blendColors: boolean): number[] => {
     const [blendedN7, blendedN6] = [alphaBlend192W(n7, pixel, blendColors), alphaBlend64W(n6, pixel, blendColors)];
     return [blendedN7, blendedN7, blendedN6, blendedN6, pixel];
 };
 
-const left2_3X = (n7, n5, n6, n8, pixel, blendColors: boolean) => {
+const left2_3X = (n7, n5, n6, n8, pixel: number, blendColors: boolean): number[] => {
     return [alphaBlend192W(n7, pixel, blendColors), alphaBlend64W(n5, pixel, blendColors), alphaBlend64W(n6, pixel, blendColors), pixel];
 };
 
-const up2_3X = (n5, n7, n2, n8, pixel, blendColors: boolean) => {
+const up2_3X = (n5, n7, n2, n8, pixel: number, blendColors: boolean): number[] => {
     return [alphaBlend192W(n5, pixel, blendColors), alphaBlend64W(n7, pixel, blendColors), alphaBlend64W(n2, pixel, blendColors), pixel];
 };
 
-const dia_3X = (n8, n5, n7, pixel, blendColors: boolean) => {
+const dia_3X = (n8, n5, n7, pixel: number, blendColors: boolean): number[] => {
     return [alphaBlend224W(n8, pixel, blendColors), alphaBlend32W(n5, pixel, blendColors), alphaBlend32W(n7, pixel, blendColors)];
 };
 
-const kernel3X = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8, options: XBROptions) => {
+const kernel3X = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8, options: XBROptions): number[] => {
     const ex = (pe !== ph && pe !== pf);
     if (!ex) {
         return [n2, n5, n6, n7, n8];
@@ -411,12 +411,12 @@ const kernel3X = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7
 };
 
 // 4xBR
-const leftUp2 = (n15, n14, n11, n13, n12, n10, n7, n3, pixel, blendColors: boolean) => {
+const leftUp2 = (n15, n14, n11, n13, n12, n10, n7, n3, pixel: number, blendColors: boolean): number[] => {
     const blendedN13 = alphaBlend192W(n13, pixel, blendColors), blendedN12 = alphaBlend64W(n12, pixel, blendColors);
     return [pixel, pixel, pixel, blendedN12, blendedN12, blendedN12, blendedN13, n3];
 };
 
-const left2 = (n15, n14, n11, n13, n12, n10, pixel, blendColors: boolean) => {
+const left2 = (n15, n14, n11, n13, n12, n10, pixel: number, blendColors: boolean): number[] => {
     return [
         pixel,
         pixel,
@@ -427,7 +427,7 @@ const left2 = (n15, n14, n11, n13, n12, n10, pixel, blendColors: boolean) => {
     ];
 };
 
-const up2 = (n15, n14, n11, n3, n7, n10, pixel, blendColors: boolean) => {
+const up2 = (n15, n14, n11, n3, n7, n10, pixel: number, blendColors: boolean): number[] => {
     return [
         pixel,
         alphaBlend192W(n14, pixel, blendColors),
@@ -438,7 +438,7 @@ const up2 = (n15, n14, n11, n3, n7, n10, pixel, blendColors: boolean) => {
     ];
 };
 
-const dia = (n15, n14, n11, pixel, blendColors: boolean) => {
+const dia = (n15, n14, n11, pixel: number, blendColors: boolean): number[] => {
     return [
         pixel,
         alphaBlend128W(n14, pixel, blendColors),
