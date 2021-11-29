@@ -141,11 +141,11 @@ const getRelatedPoints = (input: Uint32Array, x: number, y: number, width: numbe
 // This is the XBR2x by Hyllian (see http://board.byuu.org/viewtopic.php?f=10&t=2248)
 const computeXbr2x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-        a1, b1, c1,
+            a1, b1, c1,
         a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
-        g5, h5, i5,
+            g5, h5, i5,
     ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
     let [e0, e1, e2, e3] = new Array(4).fill(pe);
@@ -162,11 +162,11 @@ const computeXbr2x = (input: Uint32Array, oriX: number, oriY: number, oriW: numb
 
 const computeXbr3x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-        a1, b1, c1,
+            a1, b1, c1,
         a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
-        g5, h5, i5,
+            g5, h5, i5,
     ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
     let [e0, e1, e2, e3, e4, e5, e6, e7, e8] = new Array(9).fill(pe);
@@ -188,11 +188,11 @@ const computeXbr3x = (input: Uint32Array, oriX: number, oriY: number, oriW: numb
 
 const computeXbr4x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-        a1, b1, c1,
+            a1, b1, c1,
         a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
-        g5, h5, i5,
+            g5, h5, i5,
     ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
     let [e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, ea, eb, ec, ed, ee, ef] = new Array(16).fill(pe);
