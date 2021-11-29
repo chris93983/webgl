@@ -142,7 +142,7 @@ const getRelatedPoints = (input: Uint32Array, x: number, y: number, width: numbe
 const computeXbr2x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
         a1, b1, c1,
-        a0,pa,pb,pc,c4,
+        a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
         g5, h5, i5,
@@ -163,7 +163,7 @@ const computeXbr2x = (input: Uint32Array, oriX: number, oriY: number, oriW: numb
 const computeXbr3x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
         a1, b1, c1,
-        a0,pa,pb,pc,c4,
+        a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
         g5, h5, i5,
@@ -189,7 +189,7 @@ const computeXbr3x = (input: Uint32Array, oriX: number, oriY: number, oriW: numb
 const computeXbr4x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
         a1, b1, c1,
-        a0,pa,pb,pc,c4,
+        a0, pa, pb, pc, c4,
         d0, pd, pe, pf, f4,
         g0, pg, ph, pi, i4,
         g5, h5, i5,
