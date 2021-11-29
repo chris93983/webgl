@@ -39,6 +39,7 @@
 
         const inputImageData = contextInput.getImageData(0, 0, input.width, input.height);
         const inputUnit32Array = new Uint32Array(inputImageData.data.buffer);
+        console.log('inputUnit32Array', inputUnit32Array);
         const [result2x, result3x, result4x] = [xbr2x(inputUnit32Array, input.width, input.height), xbr3x(inputUnit32Array, input.width, input.height), xbr4x(inputUnit32Array, input.width, input.height)];
         const [output2xData, output3xData, output4xData] = [
             contextOutput2x.createImageData(input.width * 2, input.height * 2),

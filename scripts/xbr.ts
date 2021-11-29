@@ -99,203 +99,124 @@ const pixelInterpolate = (A: number, B: number, q1: number, q2: number): number 
     return ((~~r) | ((~~g) << 8) | ((~~b) << 16) | ((~~a) << 24));
 };
 
-const getRelatedPoints = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number): number[] => {
-    let xm1 = oriX - 1;
-    if (xm1 < 0) {
-        xm1 = 0;
-    }
-    let xm2 = oriX - 2;
-    if (xm2 < 0) {
-        xm2 = 0;
-    }
-    let xp1 = oriX + 1;
-    if (xp1 >= oriW) {
-        xp1 = oriW - 1;
-    }
-    let xp2 = oriX + 2;
-    if (xp2 >= oriW) {
-        xp2 = oriW - 1;
-    }
-    let ym1 = oriY - 1;
-    if (ym1 < 0) {
-        ym1 = 0;
-    }
-    let ym2 = oriY - 2;
-    if (ym2 < 0) {
-        ym2 = 0;
-    }
-    let yp1 = oriY + 1;
-    if (yp1 >= oriH) {
-        yp1 = oriH - 1;
-    }
-    let yp2 = oriY + 2;
-    if (yp2 >= oriH) {
-        yp2 = oriH - 1;
-    }
+const getRelatedPoints = (input: Uint32Array, x: number, y: number, width: number, height: number): number[] => {
+    const xm1 = Math.max(x - 1, 0);
+    const xm2 = Math.max(x - 2, 0);
+    const ym1 = Math.max(y - 1, 0);
+    const ym2 = Math.max(y - 2, 0);
+    const xp1 = Math.min(x + 1, width - 1);
+    const xp2 = Math.min(x + 2, width - 1);
+    const yp1 = Math.min(y + 1, height - 1);
+    const yp2 = Math.min(y + 2, height - 1);
 
     return [
-        oriPixelView[xm1 + ym2 * oriW],  /* a1 */
-        oriPixelView[oriX + ym2 * oriW], /* b1 */
-        oriPixelView[xp1 + ym2 * oriW],  /* c1 */
+        input[xm1 + ym2 * width],  /* a1 */
+        input[x + ym2 * width], /* b1 */
+        input[xp1 + ym2 * width],  /* c1 */
 
-        oriPixelView[xm2 + ym1 * oriW],  /* a0 */
-        oriPixelView[xm1 + ym1 * oriW],  /* pa */
-        oriPixelView[oriX + ym1 * oriW], /* pb */
-        oriPixelView[xp1 + ym1 * oriW],  /* pc */
-        oriPixelView[xp2 + ym1 * oriW],  /* c4 */
+        input[xm2 + ym1 * width],  /* a0 */
+        input[xm1 + ym1 * width],  /* pa */
+        input[x + ym1 * width], /* pb */
+        input[xp1 + ym1 * width],  /* pc */
+        input[xp2 + ym1 * width],  /* c4 */
 
-        oriPixelView[xm2 + oriY * oriW], /* d0 */
-        oriPixelView[xm1 + oriY * oriW], /* pd */
-        oriPixelView[oriX + oriY * oriW],/* pe */
-        oriPixelView[xp1 + oriY * oriW], /* pf */
-        oriPixelView[xp2 + oriY * oriW], /* f4 */
+        input[xm2 + y * width], /* d0 */
+        input[xm1 + y * width], /* pd */
+        input[x + y * width],/* pe */
+        input[xp1 + y * width], /* pf */
+        input[xp2 + y * width], /* f4 */
 
-        oriPixelView[xm2 + yp1 * oriW],  /* g0 */
-        oriPixelView[xm1 + yp1 * oriW],  /* pg */
-        oriPixelView[oriX + yp1 * oriW], /* ph */
-        oriPixelView[xp1 + yp1 * oriW],  /* pi */
-        oriPixelView[xp2 + yp1 * oriW],  /* i4 */
+        input[xm2 + yp1 * width],  /* g0 */
+        input[xm1 + yp1 * width],  /* pg */
+        input[x + yp1 * width], /* ph */
+        input[xp1 + yp1 * width],  /* pi */
+        input[xp2 + yp1 * width],  /* i4 */
 
-        oriPixelView[xm1 + yp2 * oriW],  /* g5 */
-        oriPixelView[oriX + yp2 * oriW], /* h5 */
-        oriPixelView[xp1 + yp2 * oriW]   /* i5 */
+        input[xm1 + yp2 * width],  /* g5 */
+        input[x + yp2 * width], /* h5 */
+        input[xp1 + yp2 * width]   /* i5 */
     ];
 };
 
 // This is the XBR2x by Hyllian (see http://board.byuu.org/viewtopic.php?f=10&t=2248)
-const computeXbr2x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
-    const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
+const computeXbr2x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-            a1,
-            b1,
-            c1,
-            a0,
-            pa,
-            pb,
-            pc,
-            c4,
-            d0,
-            pd,
-            pe,
-            pf,
-            f4,
-            g0,
-            pg,
-            ph,
-            pi,
-            i4,
-            g5,
-            h5,
-            i5,
-        ] = relatedPoints;
-    let e0: number, e1: number, e2: number, e3: number;
-    e0 = e1 = e2 = e3 = pe;
+        a1, b1, c1,
+        a0,pa,pb,pc,c4,
+        d0, pd, pe, pf, f4,
+        g0, pg, ph, pi, i4,
+        g5, h5, i5,
+    ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
+    let [e0, e1, e2, e3] = new Array(4).fill(pe);
     [e1, e2, e3] = kernel2Xv5(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e1, e2, e3, options);
     [e0, e3, e1] = kernel2Xv5(pe, pc, pf, pb, pi, pa, ph, pd, b1, c1, f4, c4, e0, e3, e1, options);
     [e2, e1, e0] = kernel2Xv5(pe, pa, pb, pd, pc, pg, pf, ph, d0, a0, b1, a1, e2, e1, e0, options);
     [e3, e0, e2] = kernel2Xv5(pe, pg, pd, ph, pa, pi, pb, pf, h5, g5, d0, g0, e3, e0, e2, options);
 
-    dstPixelView[dstX + dstY * dstW] = e0;
-    dstPixelView[dstX + 1 + dstY * dstW] = e1;
-    dstPixelView[dstX + (dstY + 1) * dstW] = e2;
-    dstPixelView[dstX + 1 + (dstY + 1) * dstW] = e3;
+    output[dstX + dstY * dstW] = e0;
+    output[dstX + 1 + dstY * dstW] = e1;
+    output[dstX + (dstY + 1) * dstW] = e2;
+    output[dstX + 1 + (dstY + 1) * dstW] = e3;
 };
 
-const computeXbr3x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
-    const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
+const computeXbr3x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-            a1,
-            b1,
-            c1,
-            a0,
-            pa,
-            pb,
-            pc,
-            c4,
-            d0,
-            pd,
-            pe,
-            pf,
-            f4,
-            g0,
-            pg,
-            ph,
-            pi,
-            i4,
-            g5,
-            h5,
-            i5,
-        ] = relatedPoints;
-    let e0: number, e1: number, e2: number, e3: number, e4: number, e5: number, e6: number, e7: number, e8: number;
-    e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = pe;
+        a1, b1, c1,
+        a0,pa,pb,pc,c4,
+        d0, pd, pe, pf, f4,
+        g0, pg, ph, pi, i4,
+        g5, h5, i5,
+    ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
-
+    let [e0, e1, e2, e3, e4, e5, e6, e7, e8] = new Array(9).fill(pe);
     [e2, e5, e6, e7, e8] = kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e2, e5, e6, e7, e8, options);
     [e0, e1, e8, e5, e2] = kernel3X(pe, pc, pf, pb, pi, pa, ph, pd, b1, c1, f4, c4, e0, e1, e8, e5, e2, options);
     [e6, e3, e2, e1, e0] = kernel3X(pe, pa, pb, pd, pc, pg, pf, ph, d0, a0, b1, a1, e6, e3, e2, e1, e0, options);
     [e8, e7, e0, e3, e6] = kernel3X(pe, pg, pd, ph, pa, pi, pb, pf, h5, g5, d0, g0, e8, e7, e0, e3, e6, options);
 
-    dstPixelView[dstX + dstY * dstW] = e0;
-    dstPixelView[dstX + 1 + dstY * dstW] = e1;
-    dstPixelView[dstX + 2 + dstY * dstW] = e2;
-    dstPixelView[dstX + (dstY + 1) * dstW] = e3;
-    dstPixelView[dstX + 1 + (dstY + 1) * dstW] = e4;
-    dstPixelView[dstX + 2 + (dstY + 1) * dstW] = e5;
-    dstPixelView[dstX + (dstY + 2) * dstW] = e6;
-    dstPixelView[dstX + 1 + (dstY + 2) * dstW] = e7;
-    dstPixelView[dstX + 2 + (dstY + 2) * dstW] = e8;
+    output[dstX + dstY * dstW] = e0;
+    output[dstX + 1 + dstY * dstW] = e1;
+    output[dstX + 2 + dstY * dstW] = e2;
+    output[dstX + (dstY + 1) * dstW] = e3;
+    output[dstX + 1 + (dstY + 1) * dstW] = e4;
+    output[dstX + 2 + (dstY + 1) * dstW] = e5;
+    output[dstX + (dstY + 2) * dstW] = e6;
+    output[dstX + 1 + (dstY + 2) * dstW] = e7;
+    output[dstX + 2 + (dstY + 2) * dstW] = e8;
 };
 
-const computeXbr4x = (oriPixelView: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, dstPixelView: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
-    const relatedPoints = getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH);
+const computeXbr4x = (input: Uint32Array, oriX: number, oriY: number, oriW: number, oriH: number, output: Uint32Array, dstX: number, dstY: number, dstW: number, options: XBROptions): void => {
     const [
-            a1,
-            b1,
-            c1,
-            a0,
-            pa,
-            pb,
-            pc,
-            c4,
-            d0,
-            pd,
-            pe,
-            pf,
-            f4,
-            g0,
-            pg,
-            ph,
-            pi,
-            i4,
-            g5,
-            h5,
-            i5,
-        ] = relatedPoints;
-    let e0: number, e1: number, e2: number, e3: number, e4: number, e5: number, e6: number, e7: number, e8: number, e9: number, ea: number, eb: number, ec: number, ed: number, ee: number, ef: number;
-    e0 = e1 = e2 = e3 = e4 = e5 = e6 = e7 = e8 = e9 = ea = eb = ec = ed = ee = ef = pe;
+        a1, b1, c1,
+        a0,pa,pb,pc,c4,
+        d0, pd, pe, pf, f4,
+        g0, pg, ph, pi, i4,
+        g5, h5, i5,
+    ] = getRelatedPoints(input, oriX, oriY, oriW, oriH);
 
+    let [e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, ea, eb, ec, ed, ee, ef] = new Array(16).fill(pe);
     [ef, ee, eb, e3, e7, ea, ed, ec] = kernel4Xv2(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, ef, ee, eb, e3, e7, ea, ed, ec, options);
     [e3, e7, e2, e0, e1, e6, eb, ef] = kernel4Xv2(pe, pc, pf, pb, pi, pa, ph, pd, b1, c1, f4, c4, e3, e7, e2, e0, e1, e6, eb, ef, options);
     [e0, e1, e4, ec, e8, e5, e2, e3] = kernel4Xv2(pe, pa, pb, pd, pc, pg, pf, ph, d0, a0, b1, a1, e0, e1, e4, ec, e8, e5, e2, e3, options);
     [ec, e8, ed, ef, ee, e9, e4, e0] = kernel4Xv2(pe, pg, pd, ph, pa, pi, pb, pf, h5, g5, d0, g0, ec, e8, ed, ef, ee, e9, e4, e0, options);
 
-    dstPixelView[dstX + dstY * dstW] = e0;
-    dstPixelView[dstX + 1 + dstY * dstW] = e1;
-    dstPixelView[dstX + 2 + dstY * dstW] = e2;
-    dstPixelView[dstX + 3 + dstY * dstW] = e3;
-    dstPixelView[dstX + (dstY + 1) * dstW] = e4;
-    dstPixelView[dstX + 1 + (dstY + 1) * dstW] = e5;
-    dstPixelView[dstX + 2 + (dstY + 1) * dstW] = e6;
-    dstPixelView[dstX + 3 + (dstY + 1) * dstW] = e7;
-    dstPixelView[dstX + (dstY + 2) * dstW] = e8;
-    dstPixelView[dstX + 1 + (dstY + 2) * dstW] = e9;
-    dstPixelView[dstX + 2 + (dstY + 2) * dstW] = ea;
-    dstPixelView[dstX + 3 + (dstY + 2) * dstW] = eb;
-    dstPixelView[dstX + (dstY + 3) * dstW] = ec;
-    dstPixelView[dstX + 1 + (dstY + 3) * dstW] = ed;
-    dstPixelView[dstX + 2 + (dstY + 3) * dstW] = ee;
-    dstPixelView[dstX + 3 + (dstY + 3) * dstW] = ef;
+    output[dstX + dstY * dstW] = e0;
+    output[dstX + 1 + dstY * dstW] = e1;
+    output[dstX + 2 + dstY * dstW] = e2;
+    output[dstX + 3 + dstY * dstW] = e3;
+    output[dstX + (dstY + 1) * dstW] = e4;
+    output[dstX + 1 + (dstY + 1) * dstW] = e5;
+    output[dstX + 2 + (dstY + 1) * dstW] = e6;
+    output[dstX + 3 + (dstY + 1) * dstW] = e7;
+    output[dstX + (dstY + 2) * dstW] = e8;
+    output[dstX + 1 + (dstY + 2) * dstW] = e9;
+    output[dstX + 2 + (dstY + 2) * dstW] = ea;
+    output[dstX + 3 + (dstY + 2) * dstW] = eb;
+    output[dstX + (dstY + 3) * dstW] = ec;
+    output[dstX + 1 + (dstY + 3) * dstW] = ed;
+    output[dstX + 2 + (dstY + 3) * dstW] = ee;
+    output[dstX + 3 + (dstY + 3) * dstW] = ef;
 }
 
 const alphaBlend32W = (dst: number, src: number, blendColors: boolean) => blendColors ? pixelInterpolate(dst, src, 7, 1) : dst;
@@ -482,37 +403,37 @@ const kernel4Xv2 = (pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n15, n14, n1
 };
 
 export const xbr2x = (pixelArray: Uint32Array, width: number, height: number, options = new XBROptions()): Uint32Array => {
-    const scaledPixelArray = new Uint32Array(width * height * 4);
+    const output = new Uint32Array(width * height * 4);
 
     for (let c = 0; c < width; c++) {
         for (let d = 0; d < height; d++) {
-            computeXbr2x(pixelArray, c, d, width, height, scaledPixelArray, c * 2, d * 2, width * 2, options);
+            computeXbr2x(pixelArray, c, d, width, height, output, c * 2, d * 2, width * 2, options);
         }
     }
 
-    return scaledPixelArray;
+    return output;
 };
 
 export const xbr3x = (pixelArray: Uint32Array, width: number, height: number, options = new XBROptions()): Uint32Array => {
-    const scaledPixelArray = new Uint32Array(width * height * 9);
+    const output = new Uint32Array(width * height * 9);
 
     for (let c = 0; c < width; c++) {
         for (let d = 0; d < height; d++) {
-            computeXbr3x(pixelArray, c, d, width, height, scaledPixelArray, c * 3, d * 3, width * 3, options);
+            computeXbr3x(pixelArray, c, d, width, height, output, c * 3, d * 3, width * 3, options);
         }
     }
 
-    return scaledPixelArray;
+    return output;
 };
 
 export const xbr4x = (pixelArray: Uint32Array, width: number, height: number, options = new XBROptions()): Uint32Array => {
-    const scaledPixelArray = new Uint32Array(width * height * 16);
+    const output = new Uint32Array(width * height * 16);
 
     for (let c = 0; c < width; c++) {
         for (let d = 0; d < height; d++) {
-            computeXbr4x(pixelArray, c, d, width, height, scaledPixelArray, c * 4, d * 4, width * 4, options);
+            computeXbr4x(pixelArray, c, d, width, height, output, c * 4, d * 4, width * 4, options);
         }
     }
 
-    return scaledPixelArray;
+    return output;
 };
