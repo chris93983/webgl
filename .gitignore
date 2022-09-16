@@ -9,6 +9,7 @@ platforms
 tmp
 out-tsc
 output
+scripts/*.js
 backend/packages
 backend/SharedServices/Services/ZenStorage/packages
 backend/SharedServices/Services/ZenStorage/ZENStorageServerGateway/Data

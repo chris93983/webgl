@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Stack</title>
+    <link rel="stylesheet" href="./styles/common.css">
+    <style>
+        canvas {
+            width: 480px;
+        }
+
+        .canvas-container {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <canvas id="canvasLayer1"></canvas>
+        <canvas id="canvasLayer2"></canvas>
+        <canvas id="canvasLayer3"></canvas>
+    </div>
+    <hr>
+    <canvas id="output"></canvas>
+    <script type="module">
+        import { createImageFromFile } from './scripts/utils/create-image-from-file.js';
+        import { getImageDepthMap } from './scripts/focus-stack.js';
+        const [canvasLayer1, canvasLayer2, canvasLayer3, canvasOutput] = document.querySelectorAll('canvas');
+        const [layer1Context, layer2Context, layer3Context, outputContext] = [canvasLayer1.getContext('2d'), canvasLayer2.getContext('2d'), canvasLayer3.getContext('2d'), canvasOutput.getContext('2d')];
+        const [layer1Url, layer2Url, layer3Url] = ['./images/layer1.jpg', './images/layer2.jpg', './images/layer3.jpg'];
+        const [imageLayer1, imageLayer2, imageLayer3] = [await createImageFromFile(layer1Url), await createImageFromFile(layer2Url),  await createImageFromFile(layer3Url)];
+        canvasLayer1.width = imageLayer1.width;
+        canvasLayer1.height = imageLayer1.height;
+        canvasLayer2.width = imageLayer2.width;
+        canvasLayer2.height = imageLayer2.height;
+        canvasLayer3.width = imageLayer3.width;
+        canvasLayer3.height = imageLayer3.height;
+        canvasOutput.width = imageLayer2.width;
+        canvasOutput.height = imageLayer2.height;
+
+        layer1Context.drawImage(imageLayer1, 0, 0);
+        layer2Context.drawImage(imageLayer2, 0, 0);
+        layer3Context.drawImage(imageLayer3, 0, 0);
+        
+        const result32Array = await getImageDepthMap(layer1Url, layer2Url, layer3Url);
+        const outputImageData = outputContext.createImageData(imageLayer1.width,imageLayer1.height);
+        outputImageData.data.set(new Uint8ClampedArray(result32Array.buffer));
+        outputContext.putImageData(outputImageData, 0, 0);
+    </script>
+</body>
+</html>

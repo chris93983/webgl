@@ -8,6 +8,7 @@ img.onload = () => {
     img.style.marginBottom = `${img.height}px`;
 };
 // img.src = './images/advancewars.png';
+// img.src = './images/IfmPH.png';
 img.src = './images/emeral.png';
 
 let src: number[] = null, dest: number[] = null;
