@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convolution</title>
+    <link rel="stylesheet" href="./styles/common.css">
+    <script src="scripts/convolution.js" type="module"></script>
+    <style>
+        #myCanvas {
+            transform: scale(3);
+        }
+
+        .kernel {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 8px;border: solid 1px black;
+            margin-top: 300px;
+            padding: 4px;
+
+            & input {
+                width: 30px;
+                text-align: center;
+                border: none;
+                outline: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <div class="kernel">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+        <input type="number">
+    </div>
+    <select id="kernels">
+        <option>[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]</option>
+        <option>[-1.0, -1.0, -1.0, -1.0, 8.0, -1.0, -1.0, -1.0, -1.0]</option>
+        <option>[1.0, 0.0, -1.0, 1.0, 0.0, -1.0, 1.0, 0.0, -1.0]</option>
+        <option>[-1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0]</option>
+        <option>[1.0, 1.0, 1.0, 0.0, 0.0, 0.0, -1.0, -1.0, -1.0]</option>
+        <option>[-1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0]</option>
+
+        <option>[-1.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 1.0]</option>
+        <option>[1.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, -1.0]</option>
+        <option>[0.0, 1.0, 1.0, -1.0, 0.0, 1.0, -1.0, -1.0, 0.0]</option>
+        <option>[0.0, -1.0, -1.0, 1.0, 0.0, -1.0, 1.0, 1.0, 0.0]</option>
+    </select>
+    <div>
+        <input type="number" id="inputAll" value="1">
+        <button id="btnChangeAll">Change All</button>
+    </div>
+    <button id="btnRun">Run</button>
+    <a target="_blank" href="https://setosa.io/ev/image-kernels/">Another Demo Site</a>
+</html>

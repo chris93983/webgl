@@ -163,8 +163,9 @@ const aTexCoord = new Float32Array([
     // await drawPoints();
     // await drawColor();
     // await drawTriangle();
-    const blob = await (await fetch('images/IfmPH.png')).blob();
+    // const blob = await (await fetch('images/IfmPH.png')).blob();
     // const blob = await (await fetch('images/1.jpg')).blob();
+    const blob = await (await fetch('images/cell1.jpg')).blob();
     await drawImage(blob);
     gammaInput.addEventListener('input', e => drawImage(blob));
 })();

@@ -17,3 +17,7 @@ hr {
     border: none;
     background-color: black;
 }
+
+#myCanvas {
+    border: solid 1px black;
+}
