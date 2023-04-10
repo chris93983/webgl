@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/common.css">
+    <script src="scripts/math-line.js" type="module"></script>
+    <title>Draw math line</title>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+        const myCanvas = document.querySelector('#myCanvas');
+        const context = myCanvas.getContext('2d');
+        myCanvas.width = myCanvas.height = 900;
+        const [center, xMin, xMax] = [myCanvas.width / 2, -200, 200];
+        // const getY = (x) => Math.sin(x);
+        // const getY = (x) => Math.sin(x);
+        // const getY = (x) => Math.acos(x);
+        // const getY = (x) => Math.log(x);
+        // const getY = (x) => Math.pow(x, 2) * 2 + 1;
+        getY = (x, z) => Math.pow(x, 2) * z;
+
+        // context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(center + xMin, center + getY(xMin));
+
+        for (let x = xMin; x <= xMax; x++) {
+            context.lineTo(center + x, center + getY(x));
+        }
+
+        context.stroke();
+    </script>
+</body>
+</html>
