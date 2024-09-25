@@ -1,13 +1,5 @@
 import { getImageData } from './utils/get-image-data.js';
 
-const aPositionPoints = new Float32Array([
-    1.0, 1.0, 1.0, 1.0,
-    1.0, -1.0, 1.0, 1.0,
-    -1.0, -1.0, 1.0, 1.0,
-    -1.0, 1.0, 1.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    0.5, 0.5, 1.0, 1.0,
-]);
 const aPosition = new Float32Array([
     1.0, -1.0,
     1.0, 1.0,
@@ -137,9 +129,9 @@ const aTexCoord = new Float32Array([
     };
 
     /**** calls ****/
-    // await useShader('shaders/vertex/common.glsl', true);
+    await useShader('shaders/vertex/common.glsl', true);
     // const blob = await (await fetch('images/IfmPH.png')).blob();
-    const blob = await (await fetch('images/1.jpg')).blob();
+    const blob = await (await fetch('images/4k.jpg')).blob();
     // const blob = await (await fetch('images/cell1.jpg')).blob();
     await drawImage(blob);
     // drawColorRandom();
