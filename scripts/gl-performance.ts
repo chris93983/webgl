@@ -14,7 +14,7 @@ const aTexCoord = new Float32Array([
 ]);
 
 (async () => {
-    const [myCanvas, fps] = [document.querySelector<HTMLCanvasElement>('#myCanvas'), document.querySelector<HTMLElement>('#fps')];
+    const [myCanvas, fps, video] = [document.querySelector<HTMLCanvasElement>('#myCanvas'), document.querySelector<HTMLElement>('#fps'), document.querySelector<HTMLVideoElement>('#test_video')];
     const gl = myCanvas.getContext('webgl');
     const [program, textureImage] = [gl.createProgram(), new Image()];
     let [vShaderAttached, fShaderAttached, now] = [false, false, performance.now()];
@@ -131,8 +131,20 @@ const aTexCoord = new Float32Array([
     /**** calls ****/
     await useShader('shaders/vertex/common.glsl', true);
     // const blob = await (await fetch('images/IfmPH.png')).blob();
-    const blob = await (await fetch('images/4k.jpg')).blob();
+    // const blob = await (await fetch('images/4k.jpg')).blob();
     // const blob = await (await fetch('images/cell1.jpg')).blob();
-    await drawImage(blob);
+    // await drawImage(blob);
     // drawColorRandom();
+
+    let [decodedFrames, canplay] = [0, false];
+    video.addEventListener('canplay', () => {
+        if (!canplay) {
+            setInterval(() => {
+                canplay = true;
+                const decoded = (video as any).webkitDecodedFrameCount;
+                fps.innerText = `${decoded - decodedFrames}`;
+                console.log(`${fps.innerText}fps`);
+                decodedFrames = decoded;
+            }, 1000);
+        } });
 })();
